@@ -19,3 +19,40 @@ export const calculateChecksum = (boxIds: string[]): number => {
     boxIds.filter(x => hasCountOfMatchingLetters(x, 3)).length
   );
 };
+
+export const findMatchingBoxes = (boxIds: string[]) => {
+  const alreadyCheckedBoxes = [];
+  for (const boxId of boxIds) {
+    for (const compareBoxId of alreadyCheckedBoxes) {
+      const lettersInCommon = [];
+      let differences = 0;
+      if (boxId.length !== compareBoxId.length) {
+        throw new Error(
+          `Box IDs must be the same length. ${boxId}:${
+            boxId.length
+          }; ${compareBoxId}:${compareBoxId.length}`
+        );
+      }
+      for (let i = 0; i < boxId.length; i++) {
+        const box1Letter = boxId.charAt(i);
+        const box2Letter = compareBoxId.charAt(i);
+        if (box1Letter === box2Letter) {
+          lettersInCommon.push(box1Letter);
+        } else {
+          differences += 1;
+          if (differences > 1) {
+            // too many differences, don't waste time comparing anymore
+            continue;
+          }
+        }
+      }
+      if (differences === 1) {
+        return {
+          boxes: [boxId, compareBoxId],
+          lettersInCommon: lettersInCommon.join(''),
+        };
+      }
+    }
+    alreadyCheckedBoxes.push(boxId);
+  }
+};
