@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
-    "strict": true
+    "strict": true,
+    "target": "es2018",
+    "sourceMap": true
   },
+  "references": [],
   "include": ["./src/**/*"]
 }
