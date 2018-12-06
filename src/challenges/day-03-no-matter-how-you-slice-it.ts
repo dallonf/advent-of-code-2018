@@ -70,3 +70,24 @@ export const calculateTotalOverlap = (claims: Claim[]) => {
   }
   return overlapSet.size;
 };
+
+export const findNonOverlappingClaim = (claims: Claim[]) => {
+  const overlappingClaims = new Set<number>();
+  const otherClaims = [];
+  for (const claim of claims) {
+    for (const otherClaim of otherClaims) {
+      const overlapArea = getOverlapArea(claim, otherClaim);
+      if (overlapArea) {
+        overlappingClaims.add(claim.id);
+        overlappingClaims.add(otherClaim.id);
+      }
+    }
+    otherClaims.push(claim);
+  }
+  // loop through one more time and return the first claim that does not overlap with the others
+  for (const claim of claims) {
+    if (!overlappingClaims.has(claim.id)) {
+      return claim.id;
+    }
+  }
+};
