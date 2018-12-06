@@ -12,3 +12,10 @@ export const hasCountOfMatchingLetters = (boxId: string, count: number) => {
   }
   return false;
 };
+
+export const calculateChecksum = (boxIds: string[]): number => {
+  return (
+    boxIds.filter(x => hasCountOfMatchingLetters(x, 2)).length *
+    boxIds.filter(x => hasCountOfMatchingLetters(x, 3)).length
+  );
+};
