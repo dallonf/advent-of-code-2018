@@ -2,6 +2,7 @@ import { parseLines } from '../utils/readLines';
 import {
   getOverlapArea,
   parseClaim,
+  calculateTotalOverlap,
 } from './day-03-no-matter-how-you-slice-it';
 
 describe('Part One', () => {
@@ -33,5 +34,9 @@ describe('Part One', () => {
   it('detects when areas do not overlap', () => {
     expect(getOverlapArea(DUMMY_CLAIMS[0], DUMMY_CLAIMS[2])).toEqual(null);
     expect(getOverlapArea(DUMMY_CLAIMS[1], DUMMY_CLAIMS[2])).toEqual(null);
+  });
+
+  it('calculates total overlap', () => {
+    expect(calculateTotalOverlap(DUMMY_CLAIMS)).toBe(4);
   });
 });

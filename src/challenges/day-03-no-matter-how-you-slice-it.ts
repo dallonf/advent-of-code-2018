@@ -24,18 +24,15 @@ export const parseClaim = (input: string): Claim => {
     y: parseInt(matches[3], 10),
     width: parseInt(matches[4], 10),
     height: parseInt(matches[5], 10),
-  }
+  };
 };
 
 export const getOverlapArea = (a: Claim, b: Claim): Rect | null => {
-  let overlapWidth = 0,
-    overlapHeight = 0;
-
   if (a.x >= right(b) || right(a) <= b.x) {
-    // no overlap on the X dimension
+    // no overlap on the X axis
     return null;
   } else if (a.y >= bottom(b) || bottom(a) <= b.y) {
-    // no overlap on the Y dimension
+    // no overlap on the Y axis
     return null;
   }
 
@@ -52,9 +49,24 @@ export const getOverlapArea = (a: Claim, b: Claim): Rect | null => {
   };
 };
 
-/*
-
-a---b---a-----b
-b---a---b-----b
-
-*/
+const hashCoordinate = (x: number, y: number) => `${x},${y}`;
+export const calculateTotalOverlap = (claims: Claim[]) => {
+  const overlapSet = new Set<string>();
+  const otherClaims = [];
+  for (const claim of claims) {
+    for (const otherClaim of otherClaims) {
+      const overlapArea = getOverlapArea(claim, otherClaim);
+      if (overlapArea) {
+        // calculate every point in the overlapped rectangle
+        // and add it to the overlapSet
+        for (let x = overlapArea.x; x < right(overlapArea); x++) {
+          for (let y = overlapArea.y; y < bottom(overlapArea); y++) {
+            overlapSet.add(hashCoordinate(x, y));
+          }
+        }
+      }
+    }
+    otherClaims.push(claim);
+  }
+  return overlapSet.size;
+};
