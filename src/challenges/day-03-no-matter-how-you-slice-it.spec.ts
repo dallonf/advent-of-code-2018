@@ -1,9 +1,11 @@
-import { parseLines } from '../utils/readLines';
+import { parseLines, readLines } from '../utils/readLines';
 import {
   getOverlapArea,
   parseClaim,
   calculateTotalOverlap,
 } from './day-03-no-matter-how-you-slice-it';
+
+const INPUT = readLines('./day-03-data.txt', __dirname);
 
 describe('Part One', () => {
   const DUMMY_CLAIMS = parseLines(`
@@ -38,5 +40,10 @@ describe('Part One', () => {
 
   it('calculates total overlap', () => {
     expect(calculateTotalOverlap(DUMMY_CLAIMS)).toBe(4);
+  });
+
+  it('answer', () => {
+    const claims = INPUT.map(parseClaim);
+    expect(calculateTotalOverlap(claims)).toMatchInlineSnapshot(`104439`);
   });
 });
