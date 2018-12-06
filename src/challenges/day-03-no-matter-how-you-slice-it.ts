@@ -12,6 +12,21 @@ export interface Claim extends Rect {
 const right = (rect: Rect) => rect.x + rect.width;
 const bottom = (rect: Rect) => rect.y + rect.height;
 
+const REGEX = /#([0-9]+) @ ([0-9]+),([0-9]+): ([0-9]+)x([0-9]+)/;
+export const parseClaim = (input: string): Claim => {
+  const matches = input.match(REGEX);
+  if (!matches) {
+    throw new Error(`Can't parse claim string: "${input}"`);
+  }
+  return {
+    id: parseInt(matches[1], 10),
+    x: parseInt(matches[2], 10),
+    y: parseInt(matches[3], 10),
+    width: parseInt(matches[4], 10),
+    height: parseInt(matches[5], 10),
+  }
+};
+
 export const getOverlapArea = (a: Claim, b: Claim): Rect | null => {
   let overlapWidth = 0,
     overlapHeight = 0;
