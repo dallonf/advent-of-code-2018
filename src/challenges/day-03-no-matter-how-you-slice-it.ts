@@ -16,10 +16,10 @@ export const getOverlapArea = (a: Claim, b: Claim): Rect | null => {
   let overlapWidth = 0,
     overlapHeight = 0;
 
-  if (a.x > right(b) || right(a) < b.x) {
+  if (a.x >= right(b) || right(a) <= b.x) {
     // no overlap on the X dimension
     return null;
-  } else if (a.y > bottom(b) || bottom(a) < b.y) {
+  } else if (a.y >= bottom(b) || bottom(a) <= b.y) {
     // no overlap on the Y dimension
     return null;
   }
