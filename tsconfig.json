@@ -3,7 +3,8 @@
     "strict": true,
     "target": "es2018",
     "sourceMap": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "moduleResolution": "node"
   },
   "references": [],
   "include": ["./src/**/*"]
