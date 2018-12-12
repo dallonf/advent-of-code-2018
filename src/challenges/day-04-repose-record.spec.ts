@@ -1,6 +1,6 @@
 import moment from 'moment';
 import lodash from 'lodash';
-import { parseLines } from '../utils/readLines';
+import { parseLines, readLines } from '../utils/readLines';
 import { parseRecord, getAsleepGuard } from './day-04-repose-record';
 
 const SAMPLE_DATA = parseLines(`
@@ -66,5 +66,19 @@ describe('Part 1', () => {
       guardId: 10,
       minute: 24,
     });
+  });
+  it('answer', () => {
+    const data = readLines('./day-04-data.txt', __dirname).map(parseRecord);
+    const result = getAsleepGuard(data);
+    expect(result.sleepPrediction).toMatchInlineSnapshot(`
+Object {
+  "guardId": 3491,
+  "minute": 42,
+}
+`);
+    // the actual test output
+    expect(
+      result.sleepPrediction.guardId * result.sleepPrediction.minute
+    ).toMatchInlineSnapshot(`146622`);
   });
 });
