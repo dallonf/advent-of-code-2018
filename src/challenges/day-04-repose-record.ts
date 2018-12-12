@@ -77,7 +77,9 @@ export const getAsleepGuard = (input: GuardRecord[]) => {
         start,
         end: record.time,
       });
-      recordInProgress = {};
+      recordInProgress = {
+        guardId,
+      };
     };
 
     if (record.type === 'beginsShift') {
@@ -88,6 +90,13 @@ export const getAsleepGuard = (input: GuardRecord[]) => {
     } else if (record.type === 'wakesUp') {
       saveRecord();
     }
+  }
+  if (recordInProgress.guardId && recordInProgress.start) {
+    throw new Error(
+      `A record was left in progress after iterating through all of the entries - guard ${
+        recordInProgress.guardId
+      } is still asleep and we don't know what time it is now!`
+    );
   }
 
   const guardsWithTotalSleepTime = [...guardSleepTimes.entries()].map(x => ({
