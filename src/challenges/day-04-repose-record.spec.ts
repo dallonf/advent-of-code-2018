@@ -1,4 +1,5 @@
 import moment from 'moment';
+import lodash from 'lodash';
 import { parseLines } from '../utils/readLines';
 import { parseRecord, getAsleepGuard } from './day-04-repose-record';
 
@@ -54,6 +55,13 @@ describe('Part 1', () => {
   });
   it('finds a guard likely to be asleep', () => {
     const output = getAsleepGuard(SAMPLE_DATA);
+    expect(output.sleepPrediction).toEqual({
+      guardId: 10,
+      minute: 24,
+    });
+  });
+  it('handles records out of order', () => {
+    const output = getAsleepGuard(lodash.shuffle(SAMPLE_DATA));
     expect(output.sleepPrediction).toEqual({
       guardId: 10,
       minute: 24,
