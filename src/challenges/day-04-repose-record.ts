@@ -1,5 +1,5 @@
 import moment from 'moment';
-import fromPairs from 'lodash/fromPairs';
+import * as _ from 'lodash';
 
 type GuardRecord =
   | {
@@ -56,9 +56,11 @@ type GuardSleepTime = {
   end: moment.Moment;
 };
 export const getAsleepGuard = (input: GuardRecord[]) => {
+  const orderedInput = _.orderBy(input, x => x.time.valueOf());
+
   const guardSleepTimes = new Map<number, GuardSleepTime[]>();
   let recordInProgress: Partial<GuardSleepTime> = {};
-  for (const record of input) {
+  for (const record of orderedInput) {
     const saveRecord = () => {
       const { guardId, start } = recordInProgress;
       if (!guardId || !start) {
@@ -107,9 +109,26 @@ export const getAsleepGuard = (input: GuardRecord[]) => {
     ),
   }));
 
+  const sleepiestGuard = _.maxBy(guardsWithTotalSleepTime, x => x.sleepTime)!;
+  const asleepMinutes = new Map<number, number>();
+  const sleepRecords = guardSleepTimes.get(sleepiestGuard.guardId)!;
+  for (const sleepRecord of sleepRecords) {
+    const cursor = sleepRecord.start.clone();
+    while (cursor.isBefore(sleepRecord.end)) {
+      const minute = cursor.minute();
+      asleepMinutes.set(minute, (asleepMinutes.get(minute) || 0) + 1);
+      cursor.add(1, 'minute');
+    }
+  }
+  const overlapMinute = _.maxBy([...asleepMinutes.entries()], x => x[1])!;
+
   return {
-    guardTotalSleepTime: fromPairs(
+    guardTotalSleepTime: _.fromPairs(
       guardsWithTotalSleepTime.map(x => [x.guardId, x.sleepTime])
     ),
+    sleepPrediction: {
+      guardId: sleepiestGuard.guardId,
+      minute: overlapMinute[0],
+    },
   };
 };
