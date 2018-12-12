@@ -1,7 +1,11 @@
 import moment from 'moment';
 import lodash from 'lodash';
 import { parseLines, readLines } from '../utils/readLines';
-import { parseRecord, getAsleepGuard } from './day-04-repose-record';
+import {
+  parseRecord,
+  getAsleepGuard,
+  getAsleepGuardV2,
+} from './day-04-repose-record';
 
 const SAMPLE_DATA = parseLines(`
 [1518-11-01 00:00] Guard #10 begins shift
@@ -45,7 +49,7 @@ describe('parseRecord', () => {
   });
 });
 
-describe('Part 1', () => {
+describe('Part One', () => {
   it('totals guard sleep time', () => {
     const output = getAsleepGuard(SAMPLE_DATA);
     expect(output.guardTotalSleepTime).toEqual({
@@ -80,5 +84,29 @@ Object {
     expect(
       result.sleepPrediction.guardId * result.sleepPrediction.minute
     ).toMatchInlineSnapshot(`146622`);
+  });
+});
+
+describe('Part Two', () => {
+  it('finds a predictably asleep guard', () => {
+    const output = getAsleepGuardV2(SAMPLE_DATA);
+    expect(output.sleepPrediction).toEqual({
+      guardId: 99,
+      minute: 45,
+    });
+  });
+  it('answer', () => {
+    const data = readLines('./day-04-data.txt', __dirname).map(parseRecord);
+    const result = getAsleepGuardV2(data);
+    expect(result.sleepPrediction).toMatchInlineSnapshot(`
+Object {
+  "guardId": 1327,
+  "minute": 24,
+}
+`);
+    // the actual test output
+    expect(
+      result.sleepPrediction.guardId * result.sleepPrediction.minute
+    ).toMatchInlineSnapshot(`31848`);
   });
 });

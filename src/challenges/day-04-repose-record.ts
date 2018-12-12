@@ -55,7 +55,8 @@ type GuardSleepTime = {
   start: moment.Moment;
   end: moment.Moment;
 };
-export const getAsleepGuard = (input: GuardRecord[]) => {
+
+const getSleepTimes = (input: GuardRecord[]) => {
   const orderedInput = _.orderBy(input, x => x.time.valueOf());
 
   const guardSleepTimes = new Map<number, GuardSleepTime[]>();
@@ -101,6 +102,11 @@ export const getAsleepGuard = (input: GuardRecord[]) => {
     );
   }
 
+  return guardSleepTimes;
+};
+
+export const getAsleepGuard = (input: GuardRecord[]) => {
+  const guardSleepTimes = getSleepTimes(input);
   const guardsWithTotalSleepTime = [...guardSleepTimes.entries()].map(x => ({
     guardId: x[0],
     sleepTime: x[1].reduce(
@@ -129,6 +135,46 @@ export const getAsleepGuard = (input: GuardRecord[]) => {
     sleepPrediction: {
       guardId: sleepiestGuard.guardId,
       minute: overlapMinute[0],
+    },
+  };
+};
+
+export const getAsleepGuardV2 = (input: GuardRecord[]) => {
+  const guardSleepTimes = getSleepTimes(input);
+
+  const hash = (guardId: number, minute: number) => `${guardId}:${minute}`;
+  const minutesOverlap = new Map<
+    string,
+    { guardId: number; minute: number; timesAsleep: number }
+  >();
+  const incrementMinutes = (guardId: number, minute: number) => {
+    const original = minutesOverlap.get(hash(guardId, minute)) || {
+      guardId,
+      minute,
+      timesAsleep: 0,
+    };
+    minutesOverlap.set(hash(guardId, minute), {
+      ...original,
+      timesAsleep: original.timesAsleep + 1,
+    });
+  };
+
+  for (const [guardId, sleepRecords] of guardSleepTimes) {
+    for (const sleepRecord of sleepRecords) {
+      const cursor = sleepRecord.start.clone();
+      while (cursor.isBefore(sleepRecord.end)) {
+        const minute = cursor.minute();
+        incrementMinutes(guardId, minute);
+        cursor.add(1, 'minute');
+      }
+    }
+  }
+
+  const best = _.maxBy([...minutesOverlap.values()], x => x.timesAsleep)!;
+  return {
+    sleepPrediction: {
+      guardId: best.guardId,
+      minute: best.minute,
     },
   };
 };
