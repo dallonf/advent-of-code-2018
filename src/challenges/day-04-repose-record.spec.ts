@@ -14,4 +14,11 @@ describe('parseRecord', () => {
       time: moment('1518-11-01 00:05'),
     });
   });
+  it('parses a begins shift record', () => {
+    expect(parseRecord('[1518-11-01 23:58] Guard #99 begins shift')).toEqual({
+      type: 'beginsShift',
+      guardId: 99,
+      time: moment('1518-11-01 23:58'),
+    });
+  });
 });
