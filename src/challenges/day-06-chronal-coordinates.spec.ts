@@ -1,8 +1,11 @@
 import { parseLines, readLines } from '../utils/readLines';
-import { parseInput, getLargestArea } from './day-06-chronal-coordinates';
+import {
+  parseInput,
+  getLargestArea,
+  getClusterRegion,
+} from './day-06-chronal-coordinates';
 
-describe('Part One', () => {
-  const EXAMPLE_INPUT = parseLines(`
+const EXAMPLE_INPUT = parseLines(`
 1, 1
 1, 6
 8, 3
@@ -11,6 +14,7 @@ describe('Part One', () => {
 8, 9
 `).map(parseInput);
 
+describe('Part One', () => {
   it('gets size of largest area', () => {
     expect(getLargestArea(EXAMPLE_INPUT)).toBe(17);
   });
@@ -23,6 +27,14 @@ describe('Part One', () => {
   });
 });
 
-describe('Part Two', () => {
+describe.only('Part Two', () => {
+  it('gets a clustered region', () => {
+    expect(getClusterRegion(EXAMPLE_INPUT, 32)).toBe(16);
+  });
 
+  it('answer', () => {
+    const input = readLines('./day-06-data.txt', __dirname).map(parseInput);
+    const result = getClusterRegion(input, 10000);
+    expect(result).toMatchInlineSnapshot(`42513`);
+  });
 });
