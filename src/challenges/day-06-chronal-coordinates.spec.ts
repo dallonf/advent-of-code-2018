@@ -22,3 +22,7 @@ describe('Part One', () => {
     expect(result).toMatchInlineSnapshot(`5365`);
   });
 });
+
+describe('Part Two', () => {
+
+});
