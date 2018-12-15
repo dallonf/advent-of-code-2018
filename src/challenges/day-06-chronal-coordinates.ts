@@ -25,10 +25,6 @@ export const getLargestArea = (input: Point[]): number => {
   const areas = new Map<Number, number>();
   const infiniteAreasByPointId = new Set<number>();
 
-  // keep track of all points - we'll remove them from the list as soon as its
-  // graph reaches the edge
-  // const pointsNotOnEdge = input.map((point, i) => ({ point, id: i }));
-
   // loop through every cell in the interior grid
   for (let x = minX; x <= maxX; x++) {
     for (let y = minY; y <= maxY; y++) {
