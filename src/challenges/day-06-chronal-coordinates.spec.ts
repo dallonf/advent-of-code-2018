@@ -1,4 +1,4 @@
-import { parseLines } from '../utils/readLines';
+import { parseLines, readLines } from '../utils/readLines';
 import { parseInput, getLargestArea } from './day-06-chronal-coordinates';
 
 describe('Part One', () => {
@@ -13,5 +13,12 @@ describe('Part One', () => {
 
   it('gets size of largest area', () => {
     expect(getLargestArea(EXAMPLE_INPUT)).toBe(17);
+  });
+
+  it('answer', () => {
+    const input = readLines('./day-06-data.txt', __dirname).map(parseInput);
+    const result = getLargestArea(input);
+    expect(result).toBeLessThan(5382);
+    expect(result).toMatchInlineSnapshot(`5382`);
   });
 });
