@@ -19,6 +19,6 @@ describe('Part One', () => {
     const input = readLines('./day-06-data.txt', __dirname).map(parseInput);
     const result = getLargestArea(input);
     expect(result).toBeLessThan(5382);
-    expect(result).toMatchInlineSnapshot(`5382`);
+    expect(result).toMatchInlineSnapshot(`5365`);
   });
 });
