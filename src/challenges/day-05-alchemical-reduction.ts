@@ -1,3 +1,5 @@
+import * as lodash from 'lodash';
+
 const isUppercase = (input: string) => input === input.toUpperCase();
 const isLowercase = (input: string) => input === input.toLowerCase();
 const getCase = (input: string) => {
@@ -32,9 +34,6 @@ const reactionSingleStep_internal = (input: string) => {
     const preSplit = input.slice(0, reactionIndex);
     const postSplit = input.slice(reactionIndex + 2);
     return { result: preSplit + postSplit, preSplit, postSplit };
-    // const newString = [...input];
-    // newString.splice(reactionIndex, 2);
-    // return { result: newString.join(''), reactionIndex };
   }
 };
 
@@ -59,4 +58,26 @@ export const reaction = (input: string): string => {
     stable = fullPreSplit.slice(0, fullPreSplit.length - 1);
     unstable = fullPreSplit.slice(fullPreSplit.length - 1) + next.postSplit;
   }
+};
+
+export const optimizePolymer = (input: string) => {
+  const possibleUnits = [...input].reduce(
+    (allUnits, letter) => allUnits.add(letter.toLowerCase()),
+    new Set<string>()
+  );
+
+  return lodash.minBy(
+    [...possibleUnits.values()].map(u => {
+      const removed = [...input]
+        .filter(x => x.toLowerCase() !== u.toLowerCase())
+        .join('');
+      const afterReaction = reaction(removed);
+
+      return {
+        result: afterReaction,
+        unit: u,
+      };
+    }),
+    x => x.result.length
+  )!;
 };
