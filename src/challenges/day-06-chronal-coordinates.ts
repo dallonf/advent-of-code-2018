@@ -32,15 +32,15 @@ export const getLargestArea = (input: Point[]): number => {
         ...a,
         distance: Math.abs(x - a.point.x) + Math.abs(y - a.point.y),
       }));
-      const sortedPointDistances = lodash.sortBy(
-        pointDistances,
-        a => a.distance
-      );
 
-      const closestPoint = sortedPointDistances[0];
+      const closestPoint = lodash.minBy(pointDistances, a => a.distance)!;
 
       // ensure that there isn't a tie for the closest point
-      if (sortedPointDistances[1].distance <= closestPoint.distance) {
+      if (
+        pointDistances.some(
+          a => a.id !== closestPoint.id && a.distance === closestPoint.distance
+        )
+      ) {
         return;
       }
 
@@ -60,3 +60,5 @@ export const getLargestArea = (input: Point[]): number => {
       .map(x => areas.get(x.id))
   )!;
 };
+
+export const getClusterRegion = (input: Point[]) => {};
