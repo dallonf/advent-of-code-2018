@@ -1,4 +1,8 @@
-import { reactionSingleStep, reaction } from './day-05-alchemical-reduction';
+import {
+  reactionSingleStep,
+  reaction,
+  optimizePolymer,
+} from './day-05-alchemical-reduction';
 import INPUT from './day-05-data';
 
 describe('Part One', () => {
@@ -17,5 +21,20 @@ describe('Part One', () => {
   it('answer', () => {
     const result = reaction(INPUT);
     expect(result.length).toMatchInlineSnapshot(`9172`);
+  });
+});
+
+describe('Part Two', () => {
+  it('finds optimization', () => {
+    const result = optimizePolymer('dabAcCaCBAcCcaDA');
+    expect(result).toEqual({
+      result: 'daDA',
+      unit: 'c',
+    });
+  });
+  it('answer', () => {
+    const result = optimizePolymer(INPUT);
+    expect(result.unit).toMatchInlineSnapshot(`"x"`);
+    expect(result.result.length).toMatchInlineSnapshot(`6550`);
   });
 });
