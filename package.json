@@ -2,7 +2,8 @@
   "name": "advent-of-code-2018",
   "private": true,
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc --build tsconfig.json"
   },
   "devDependencies": {
     "@types/jest": "^23.3.10",
