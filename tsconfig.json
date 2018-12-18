@@ -5,6 +5,7 @@
     "sourceMap": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
+    "module": "commonjs",
     "outDir": ".tmp/compiled"
   },
   "references": [],
