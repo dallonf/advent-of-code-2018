@@ -25,7 +25,7 @@ describe('Part One', () => {
     expect(getHighScore({ players: 30, lastMarble: 5807 })).toBe(37305);
   });
 
-  it.only('answer', () => {
+  it('answer', () => {
     expect(
       getHighScore({
         players: PUZZLE_INPUT_PLAYERS,
@@ -42,6 +42,6 @@ describe('Part Two', () => {
         players: PUZZLE_INPUT_PLAYERS,
         lastMarble: PUZZLE_INPUT_LAST_MARBLE * 100,
       })
-    ).toMatchInlineSnapshot(`7186300`);
+    ).toMatchInlineSnapshot(`2996043280`);
   });
 });
