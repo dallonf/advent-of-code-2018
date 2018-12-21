@@ -1,3 +1,5 @@
+import * as lodash from 'lodash';
+
 export interface Vector2 {
   x: number;
   y: number;
@@ -24,3 +26,35 @@ export const parseInput = (input: string): Point => {
     },
   };
 };
+
+export const visualizePoints = (input: Point[]): string[] => {
+  if (!input.length) return [];
+  const positions = input.map(x => x.position);
+  let minX = Math.min(...positions.map(a => a.x));
+  let maxX = Math.max(...positions.map(a => a.x));
+  let minY = Math.min(...positions.map(a => a.y));
+  let maxY = Math.max(...positions.map(a => a.y));
+  const positionKey = (point: Vector2) => `${point.x},${point.y}`;
+  const pointsOccupied = new Set<string>();
+  for (const position of positions) {
+    pointsOccupied.add(positionKey(position));
+  }
+
+  return lodash.range(minY, maxY + 1).map(y => {
+    return lodash
+      .range(minX, maxX + 1)
+      .map(x => {
+        return pointsOccupied.has(positionKey({ x, y })) ? '#' : '.';
+      })
+      .join('');
+  });
+};
+
+export const simulateSecond = (input: Point[]): Point[] =>
+  input.map(point => ({
+    ...point,
+    position: {
+      x: point.position.x + point.velocity.x,
+      y: point.position.y + point.velocity.y,
+    },
+  }));
