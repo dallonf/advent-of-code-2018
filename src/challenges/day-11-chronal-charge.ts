@@ -8,6 +8,9 @@ export const getPowerLevel = (
   y: number,
   serialNumber: number
 ): number => {
+  if (x > 300 || y > 300) {
+    throw new Error(`Invalid coordinates: ${x}, ${y}`);
+  }
   const key = getPowerLevelKey(x, y, serialNumber);
   if (powerLevelCache.has(key)) return powerLevelCache.get(key)!;
   const rackId = x + 10;
@@ -34,8 +37,8 @@ const squareCacheKey = (square: Square, serialNumber: number) =>
 const squareCache = new Map<string, SquareWithPower>();
 
 const makeGrid = (selectionSize: number) =>
-  lodash.flatMap(lodash.range(1, 301 - selectionSize), x =>
-    lodash.range(1, 301 - selectionSize).map(y => ({ x, y }))
+  lodash.flatMap(lodash.range(1, 301 - (selectionSize - 1)), x =>
+    lodash.range(1, 301 - (selectionSize - 1)).map(y => ({ x, y }))
   );
 export const getBestSquare = (
   serialNumber: number,
