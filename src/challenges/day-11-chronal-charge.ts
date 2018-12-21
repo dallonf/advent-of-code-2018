@@ -21,6 +21,18 @@ export const getPowerLevel = (
   return result;
 };
 
+interface Square {
+  x: number;
+  y: number;
+  size: number;
+}
+interface SquareWithPower extends Square {
+  totalPower: number;
+}
+const squareCacheKey = (square: Square, serialNumber: number) =>
+  `${square.x},${square.y}x${square.size}:${serialNumber}`;
+const squareCache = new Map<string, SquareWithPower>();
+
 const makeGrid = (selectionSize: number) =>
   lodash.flatMap(lodash.range(1, 301 - selectionSize), x =>
     lodash.range(1, 301 - selectionSize).map(y => ({ x, y }))
@@ -31,29 +43,87 @@ export const getBestSquare = (
 ): { x: number; y: number; totalPower: number } => {
   const result = lodash.maxBy(
     makeGrid(selectionSize).map(cell => {
+      const key = squareCacheKey(
+        { ...cell, size: selectionSize },
+        serialNumber
+      );
+
+      // Check for cached computations before doing the expensive brute force solution
+      if (squareCache.has(key)) return squareCache.get(key)!;
+
       let totalPower = 0;
-      for (let xDelta = 0; xDelta < selectionSize; xDelta++) {
+
+      const leftSquareKey = squareCacheKey(
+        { x: cell.x - 1, y: cell.y, size: selectionSize },
+        serialNumber
+      );
+      const topSquareKey = squareCacheKey(
+        { x: cell.x, y: cell.y - 1, size: selectionSize },
+        serialNumber
+      );
+      // check for a square to the left
+      if (squareCache.has(leftSquareKey)) {
+        totalPower = squareCache.get(leftSquareKey)!.totalPower;
+        // remove the left edge
         for (let yDelta = 0; yDelta < selectionSize; yDelta++) {
-          totalPower += getPowerLevel(
-            cell.x + xDelta,
+          totalPower -= getPowerLevel(
+            cell.x - 1,
             cell.y + yDelta,
             serialNumber
           );
         }
+        // add the right edge
+        for (let yDelta = 0; yDelta < selectionSize; yDelta++) {
+          totalPower += getPowerLevel(
+            cell.x + selectionSize - 1,
+            cell.y + yDelta,
+            serialNumber
+          );
+        }
+        // check for a square to the top
+      } else if (squareCache.has(topSquareKey)) {
+        totalPower = squareCache.get(topSquareKey)!.totalPower;
+        // remove the top edge
+        for (let xDelta = 0; xDelta < selectionSize; xDelta++) {
+          totalPower -= getPowerLevel(
+            cell.x + xDelta,
+            cell.y - 1,
+            serialNumber
+          );
+        }
+        // add the bottom edge
+        for (let xDelta = 0; xDelta < selectionSize; xDelta++) {
+          totalPower += getPowerLevel(
+            cell.x + xDelta,
+            cell.y + selectionSize - 1,
+            serialNumber
+          );
+        }
+      } else {
+        // we don't have anything cached we can use as a shortcut, do the full computation
+        for (let xDelta = 0; xDelta < selectionSize; xDelta++) {
+          for (let yDelta = 0; yDelta < selectionSize; yDelta++) {
+            totalPower += getPowerLevel(
+              cell.x + xDelta,
+              cell.y + yDelta,
+              serialNumber
+            );
+          }
+        }
       }
-      return { ...cell, totalPower };
+
+      const square = { ...cell, size: selectionSize, totalPower };
+      squareCache.set(key, square);
+      return square;
     }),
     a => a.totalPower
   );
-  return result!;
+  return lodash.omit(result!, 'size');
 };
 
-export const getBestSquareAndSize = (
-  serialNumber: number
-): { x: number; y: number; size: number; totalPower: number } => {
+export const getBestSquareAndSize = (serialNumber: number): SquareWithPower => {
   const result = lodash.maxBy(
     lodash.range(1, 301).map(selectionSize => {
-      console.log('checking selectionSize', selectionSize);
       const bestSquare = getBestSquare(serialNumber, { selectionSize });
       return { ...bestSquare, size: selectionSize };
     }),
