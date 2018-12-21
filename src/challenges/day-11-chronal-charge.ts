@@ -126,9 +126,44 @@ export const getBestSquare = (
 
 export const getBestSquareAndSize = (serialNumber: number): SquareWithPower => {
   const result = lodash.maxBy(
-    lodash.range(1, 301).map(selectionSize => {
-      const bestSquare = getBestSquare(serialNumber, { selectionSize });
-      return { ...bestSquare, size: selectionSize };
+    makeGrid(1).map(cell => {
+      let totalPower = getPowerLevel(cell.x, cell.y, serialNumber);
+
+      let bestSize = 1;
+      let bestPower = totalPower;
+
+      const maxSize = 301 - Math.max(cell.x, cell.y);
+
+      for (let newSize = 2; newSize < maxSize; newSize++) {
+        const newEdgeDelta = newSize - 1;
+        // add right edge
+        for (let yDelta = 0; yDelta < newSize; yDelta++) {
+          totalPower += getPowerLevel(
+            cell.x + newEdgeDelta,
+            cell.y + yDelta,
+            serialNumber
+          );
+        }
+        // add bottom edge (not counting bottom-right cell, we already got that one)
+        for (let xDelta = 0; xDelta < newSize - 1; xDelta++) {
+          totalPower += getPowerLevel(
+            cell.x + xDelta,
+            cell.y + newEdgeDelta,
+            serialNumber
+          );
+        }
+
+        if (totalPower > bestPower) {
+          bestPower = totalPower;
+          bestSize = newSize;
+        }
+      }
+
+      const square = { ...cell, size: bestSize, totalPower: bestPower };
+      if (cell.x % 5 === 0) {
+        console.log(square);
+      }
+      return square;
     }),
     a => a.totalPower
   );
