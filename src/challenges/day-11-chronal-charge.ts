@@ -1,5 +1,7 @@
 import * as lodash from 'lodash';
 
+const GRID_SIZE = 300;
+
 const getPowerLevelKey = (x: number, y: number, serialNumber: number) =>
   `${x},${y}:${serialNumber}`;
 const powerLevelCache = new Map<string, number>();
@@ -8,7 +10,7 @@ export const getPowerLevel = (
   y: number,
   serialNumber: number
 ): number => {
-  if (x > 300 || y > 300) {
+  if (x > GRID_SIZE || y > GRID_SIZE) {
     throw new Error(`Invalid coordinates: ${x}, ${y}`);
   }
   const key = getPowerLevelKey(x, y, serialNumber);
@@ -37,8 +39,8 @@ const squareCacheKey = (square: Square, serialNumber: number) =>
 const squareCache = new Map<string, SquareWithPower>();
 
 const makeGrid = (selectionSize: number) =>
-  lodash.flatMap(lodash.range(1, 301 - (selectionSize - 1)), x =>
-    lodash.range(1, 301 - (selectionSize - 1)).map(y => ({ x, y }))
+  lodash.flatMap(lodash.range(1, GRID_SIZE + 1 - (selectionSize - 1)), x =>
+    lodash.range(1, GRID_SIZE + 1 - (selectionSize - 1)).map(y => ({ x, y }))
   );
 export const getBestSquare = (
   serialNumber: number,
@@ -126,7 +128,7 @@ export const getBestSquare = (
 
 export const getBestSquareAndSize = (serialNumber: number): SquareWithPower => {
   const result = lodash.maxBy(
-    lodash.range(1, 301).map(selectionSize => {
+    lodash.range(1, GRID_SIZE + 1).map(selectionSize => {
       const bestSquare = getBestSquare(serialNumber, { selectionSize });
       return { ...bestSquare, size: selectionSize };
     }),
