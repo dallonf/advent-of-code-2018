@@ -3,6 +3,8 @@
   "private": true,
   "scripts": {
     "test": "jest",
+    "check": "tsc --noEmit",
+    "test:all": "npm run check && npm run test",
     "build": "tsc --build tsconfig.json"
   },
   "devDependencies": {

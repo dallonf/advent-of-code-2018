@@ -6,7 +6,7 @@
     "esModuleInterop": true,
     "moduleResolution": "node",
     "module": "commonjs",
-    "outDir": ".tmp/compiled"
+    "outDir": "compiled"
   },
   "references": [],
   "include": ["./src/**/*"]
