@@ -1,4 +1,8 @@
-import { getPowerLevel, getBestSquare } from './day-11-chronal-charge';
+import {
+  getPowerLevel,
+  getBestSquare,
+  getBestSquareAndSize,
+} from './day-11-chronal-charge';
 
 describe('Part One', () => {
   it('gets power level', () => {
@@ -36,5 +40,22 @@ Object {
   "y": 34,
 }
 `);
+  });
+});
+
+describe.skip('Part Two', () => {
+  it('gets best square and size', () => {
+    expect(getBestSquareAndSize(18)).toEqual({
+      x: 90,
+      y: 269,
+      size: 16,
+      totalPower: 113,
+    });
+    expect(getBestSquareAndSize(42)).toEqual({
+      x: 232,
+      y: 251,
+      size: 12,
+      totalPower: 119,
+    });
   });
 });
