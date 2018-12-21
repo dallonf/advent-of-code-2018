@@ -3,6 +3,7 @@ import {
   parseInput,
   visualizePoints,
   simulateSecond,
+  getMessage,
 } from './day-10-the-stars-align';
 
 describe('parseInput', () => {
@@ -94,5 +95,41 @@ describe('Part One', () => {
       '#...........#.....',
       '..#.....#.#.......',
     ]);
+  });
+
+  it('gets the likely message from the input', () => {
+    const result = getMessage(EXAMPLE_INPUT);
+    expect(result.seconds).toBe(3);
+    expect(visualizePoints(result.result)).toEqual([
+      '#...#..###',
+      '#...#...#.',
+      '#...#...#.',
+      '#####...#.',
+      '#...#...#.',
+      '#...#...#.',
+      '#...#...#.',
+      '#...#..###',
+    ]);
+  });
+
+  it('answer', () => {
+    const input = readLines('./day-10-input.txt', __dirname).map(parseInput);
+    const result = getMessage(input);
+    // this turned out to be the Part Two answer!
+    expect(result.seconds).toMatchInlineSnapshot(`10641`);
+    expect(visualizePoints(result.result)).toMatchInlineSnapshot(`
+Array [
+  "#....#.....###..#####......###..#....#..#####.....##....######",
+  "#....#......#...#....#......#...#....#..#....#...#..#........#",
+  "#....#......#...#....#......#....#..#...#....#..#....#.......#",
+  "#....#......#...#....#......#....#..#...#....#..#....#......#.",
+  "######......#...#####.......#.....##....#####...#....#.....#..",
+  "#....#......#...#....#......#.....##....#..#....######....#...",
+  "#....#......#...#....#......#....#..#...#...#...#....#...#....",
+  "#....#..#...#...#....#..#...#....#..#...#...#...#....#..#.....",
+  "#....#..#...#...#....#..#...#...#....#..#....#..#....#..#.....",
+  "#....#...###....#####....###....#....#..#....#..#....#..######",
+]
+`);
   });
 });
