@@ -1,17 +1,24 @@
 import * as lodash from 'lodash';
 
+const getPowerLevelKey = (x: number, y: number, serialNumber: number) =>
+  `${x},${y}:${serialNumber}`;
+const powerLevelCache = new Map<string, number>();
 export const getPowerLevel = (
   x: number,
   y: number,
   serialNumber: number
 ): number => {
+  const key = getPowerLevelKey(x, y, serialNumber);
+  if (powerLevelCache.has(key)) return powerLevelCache.get(key)!;
   const rackId = x + 10;
   let result = rackId * y;
   result += serialNumber;
   result *= rackId;
   const hundredsPlace =
     Math.floor(result / 100) - Math.floor(result / 1000) * 10;
-  return hundredsPlace - 5;
+  result = hundredsPlace - 5;
+  powerLevelCache.set(key, result);
+  return result;
 };
 
 const SELECTION_SIZE = 3;

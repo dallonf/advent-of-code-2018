@@ -26,4 +26,15 @@ describe('Part One', () => {
       totalPower: 30,
     });
   });
+
+  it('answer', () => {
+    const result = getBestSquare(5719);
+    expect(result).toMatchInlineSnapshot(`
+Object {
+  "totalPower": 29,
+  "x": 21,
+  "y": 34,
+}
+`);
+  });
 });
