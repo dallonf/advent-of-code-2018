@@ -21,18 +21,19 @@ export const getPowerLevel = (
   return result;
 };
 
-const SELECTION_SIZE = 3;
-const GRID = lodash.flatMap(lodash.range(1, 301 - SELECTION_SIZE), x =>
-  lodash.range(1, 301 - SELECTION_SIZE).map(y => ({ x, y }))
-);
+const makeGrid = (selectionSize: number) =>
+  lodash.flatMap(lodash.range(1, 301 - selectionSize), x =>
+    lodash.range(1, 301 - selectionSize).map(y => ({ x, y }))
+  );
 export const getBestSquare = (
-  serialNumber: number
+  serialNumber: number,
+  { selectionSize = 3 } = {}
 ): { x: number; y: number; totalPower: number } => {
   const result = lodash.maxBy(
-    GRID.map(cell => {
+    makeGrid(selectionSize).map(cell => {
       let totalPower = 0;
-      for (let xDelta = 0; xDelta < SELECTION_SIZE; xDelta++) {
-        for (let yDelta = 0; yDelta < SELECTION_SIZE; yDelta++) {
+      for (let xDelta = 0; xDelta < selectionSize; xDelta++) {
+        for (let yDelta = 0; yDelta < selectionSize; yDelta++) {
           totalPower += getPowerLevel(
             cell.x + xDelta,
             cell.y + yDelta,
@@ -41,6 +42,20 @@ export const getBestSquare = (
         }
       }
       return { ...cell, totalPower };
+    }),
+    a => a.totalPower
+  );
+  return result!;
+};
+
+export const getBestSquareAndSize = (
+  serialNumber: number
+): { x: number; y: number; size: number; totalPower: number } => {
+  const result = lodash.maxBy(
+    lodash.range(1, 301).map(selectionSize => {
+      console.log('checking selectionSize', selectionSize);
+      const bestSquare = getBestSquare(serialNumber, { selectionSize });
+      return { ...bestSquare, size: selectionSize };
     }),
     a => a.totalPower
   );
