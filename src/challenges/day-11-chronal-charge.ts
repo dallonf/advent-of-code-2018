@@ -115,10 +115,33 @@ export const getBestSquare = (
 };
 
 export const getBestSquareAndSize = (serialNumber: number): SquareWithPower => {
+  const table = getSummedAreaTable(serialNumber);
   const result = lodash.maxBy(
-    lodash.range(1, GRID_SIZE + 1).map(selectionSize => {
-      const bestSquare = getBestSquare(serialNumber, { selectionSize });
-      return { ...bestSquare, size: selectionSize };
+    makeGrid(1).map(cell => {
+      let totalPower = getPowerLevel(cell.x, cell.y, serialNumber);
+
+      let bestSize = 1;
+      let bestPower = totalPower;
+
+      const maxSize = 301 - Math.max(cell.x, cell.y);
+
+      for (let newSize = 2; newSize < maxSize; newSize++) {
+        const newEdgeDelta = newSize - 1;
+        totalPower = table.getSum(
+          cell.x,
+          cell.y,
+          cell.x + newEdgeDelta,
+          cell.y + newEdgeDelta
+        );
+
+        if (totalPower > bestPower) {
+          bestPower = totalPower;
+          bestSize = newSize;
+        }
+      }
+
+      const square = { ...cell, size: bestSize, totalPower: bestPower };
+      return square;
     }),
     a => a.totalPower
   );
