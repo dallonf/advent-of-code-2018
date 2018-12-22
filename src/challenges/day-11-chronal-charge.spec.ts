@@ -5,6 +5,8 @@ import {
   getSummedAreaTable,
 } from './day-11-chronal-charge';
 
+const PUZZLE_INPUT = 5719;
+
 describe('Part One', () => {
   it('gets power level', () => {
     expect(getPowerLevel(3, 5, 8)).toBe(4);
@@ -69,7 +71,7 @@ describe('Part One', () => {
   });
 
   it('answer', () => {
-    const result = getBestSquare(5719);
+    const result = getBestSquare(PUZZLE_INPUT);
     expect(result).toMatchInlineSnapshot(`
 Object {
   "totalPower": 29,
@@ -94,5 +96,16 @@ describe('Part Two', () => {
       size: 12,
       totalPower: 119,
     });
+  });
+  it('answer', () => {
+    const result = getBestSquareAndSize(PUZZLE_INPUT);
+    expect(result).toMatchInlineSnapshot(`
+Object {
+  "size": 16,
+  "totalPower": 124,
+  "x": 90,
+  "y": 244,
+}
+`);
   });
 });
