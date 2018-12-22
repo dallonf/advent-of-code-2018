@@ -34,91 +34,72 @@ interface Square {
 interface SquareWithPower extends Square {
   totalPower: number;
 }
-const squareCacheKey = (square: Square, serialNumber: number) =>
-  `${square.x},${square.y}x${square.size}:${serialNumber}`;
-const squareCache = new Map<string, SquareWithPower>();
 
 const makeGrid = (selectionSize: number) =>
   lodash.flatMap(lodash.range(1, GRID_SIZE + 1 - (selectionSize - 1)), x =>
     lodash.range(1, GRID_SIZE + 1 - (selectionSize - 1)).map(y => ({ x, y }))
   );
+
+interface SummedAreaTable {
+  readFromTable(x: number, y: number): number;
+  getSum(x1: number, y1: number, x2: number, y2: number): number;
+}
+
+// https://en.wikipedia.org/wiki/Summed-area_table
+const _getSummedAreaTable = (serialNumber: number): SummedAreaTable => {
+  const table: number[][] = [];
+
+  table[0] = [getPowerLevel(1, 1, serialNumber)];
+
+  const readFromTable = (x: number, y: number): number => {
+    if (x <= 0 || y <= 0) return 0;
+
+    const result = table[x - 1] && table[x - 1][y - 1];
+    if (result != null) {
+      return result;
+    } else {
+      // compute result lazily
+      const computed =
+        getPowerLevel(x, y, serialNumber) +
+        readFromTable(x, y - 1) +
+        readFromTable(x - 1, y) -
+        readFromTable(x - 1, y - 1);
+      if (!table[x - 1]) {
+        table[x - 1] = [];
+      }
+      table[x - 1][y - 1] = computed;
+      return computed;
+    }
+  };
+
+  const getSum = (x1: number, y1: number, x2: number, y2: number) => {
+    return (
+      readFromTable(x2, y2) +
+      readFromTable(x1 - 1, y1 - 1) -
+      readFromTable(x2, y1 - 1) -
+      readFromTable(x1 - 1, y2)
+    );
+  };
+
+  return { readFromTable, getSum };
+};
+export const getSummedAreaTable = lodash.memoize(_getSummedAreaTable);
+
 export const getBestSquare = (
   serialNumber: number,
   { selectionSize = 3 } = {}
 ): { x: number; y: number; totalPower: number } => {
+  const { getSum } = getSummedAreaTable(serialNumber);
   const result = lodash.maxBy(
     makeGrid(selectionSize).map(cell => {
-      const key = squareCacheKey(
-        { ...cell, size: selectionSize },
-        serialNumber
+      const totalPower = getSum(
+        cell.x,
+        cell.y,
+        cell.x + selectionSize - 1,
+        cell.y + selectionSize - 1
       );
-
-      // Check for cached computations before doing the expensive brute force solution
-      if (squareCache.has(key)) return squareCache.get(key)!;
-
-      let totalPower = 0;
-
-      const leftSquareKey = squareCacheKey(
-        { x: cell.x - 1, y: cell.y, size: selectionSize },
-        serialNumber
-      );
-      const topSquareKey = squareCacheKey(
-        { x: cell.x, y: cell.y - 1, size: selectionSize },
-        serialNumber
-      );
-      // check for a square to the left
-      if (squareCache.has(leftSquareKey)) {
-        totalPower = squareCache.get(leftSquareKey)!.totalPower;
-        // remove the left edge
-        for (let yDelta = 0; yDelta < selectionSize; yDelta++) {
-          totalPower -= getPowerLevel(
-            cell.x - 1,
-            cell.y + yDelta,
-            serialNumber
-          );
-        }
-        // add the right edge
-        for (let yDelta = 0; yDelta < selectionSize; yDelta++) {
-          totalPower += getPowerLevel(
-            cell.x + selectionSize - 1,
-            cell.y + yDelta,
-            serialNumber
-          );
-        }
-        // check for a square to the top
-      } else if (squareCache.has(topSquareKey)) {
-        totalPower = squareCache.get(topSquareKey)!.totalPower;
-        // remove the top edge
-        for (let xDelta = 0; xDelta < selectionSize; xDelta++) {
-          totalPower -= getPowerLevel(
-            cell.x + xDelta,
-            cell.y - 1,
-            serialNumber
-          );
-        }
-        // add the bottom edge
-        for (let xDelta = 0; xDelta < selectionSize; xDelta++) {
-          totalPower += getPowerLevel(
-            cell.x + xDelta,
-            cell.y + selectionSize - 1,
-            serialNumber
-          );
-        }
-      } else {
-        // we don't have anything cached we can use as a shortcut, do the full computation
-        for (let xDelta = 0; xDelta < selectionSize; xDelta++) {
-          for (let yDelta = 0; yDelta < selectionSize; yDelta++) {
-            totalPower += getPowerLevel(
-              cell.x + xDelta,
-              cell.y + yDelta,
-              serialNumber
-            );
-          }
-        }
-      }
 
       const square = { ...cell, size: selectionSize, totalPower };
-      squareCache.set(key, square);
       return square;
     }),
     a => a.totalPower
