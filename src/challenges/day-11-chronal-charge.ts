@@ -53,6 +53,11 @@ const _getSummedAreaTable = (serialNumber: number): SummedAreaTable => {
 
   const readFromTable = (x: number, y: number): number => {
     if (x <= 0 || y <= 0) return 0;
+    return table[x - 1][y - 1];
+  };
+
+  const populateTable = (x: number, y: number): number => {
+    if (x <= 0 || y <= 0) return 0;
 
     const result = table[x - 1] && table[x - 1][y - 1];
     if (result != null) {
@@ -61,9 +66,9 @@ const _getSummedAreaTable = (serialNumber: number): SummedAreaTable => {
       // compute result lazily
       const computed =
         getPowerLevel(x, y, serialNumber) +
-        readFromTable(x, y - 1) +
-        readFromTable(x - 1, y) -
-        readFromTable(x - 1, y - 1);
+        populateTable(x, y - 1) +
+        populateTable(x - 1, y) -
+        populateTable(x - 1, y - 1);
       if (!table[x - 1]) {
         table[x - 1] = [];
       }
@@ -80,6 +85,8 @@ const _getSummedAreaTable = (serialNumber: number): SummedAreaTable => {
       readFromTable(x1 - 1, y2)
     );
   };
+
+  populateTable(GRID_SIZE, GRID_SIZE);
 
   return { readFromTable, getSum };
 };
