@@ -5,7 +5,10 @@
     "test": "jest",
     "check": "tsc --noEmit",
     "test:all": "npm run check && npm run test",
-    "build": "tsc --build tsconfig.json"
+    "build": "tsc --build tsconfig.json",
+    "py:install": "pipenv install",
+    "py:test": "pipenv run pytest pysrc",
+    "py:test:watch": "pipenv run ptw pysrc"
   },
   "devDependencies": {
     "@types/jest": "^23.3.10",
