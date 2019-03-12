@@ -97,3 +97,36 @@ def get_best_square(serial_number: int, selection_size=3):
     )
 
     return result
+
+
+def get_best_square_and_size(serial_number: int):
+    table = SummedAreaTable(serial_number)
+
+    def candidate(cell):
+        total_power = get_power_level(cell['x'], cell['y'], serial_number)
+
+        best_size = 1
+        best_power = total_power
+
+        max_size = GRID_SIZE + 1 - max(cell['x'], cell['y'])
+
+        for new_size in range(2, max_size):
+            new_edge_delta = new_size - 1
+            total_power = table.get_sum(
+                cell['x'], cell['y'],
+                cell['x'] + new_edge_delta,
+                cell['y'] + new_edge_delta
+            )
+
+            if total_power > best_power:
+                best_power = total_power
+                best_size = new_size
+
+        return {**cell, 'size': best_size, 'total_power': best_power}
+
+    result = max(
+        [candidate(cell) for cell in make_grid(1)],
+        key=lambda a: a['total_power']
+    )
+
+    return result

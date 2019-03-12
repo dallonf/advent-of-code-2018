@@ -1,6 +1,6 @@
 
 import pytest
-from .day_11_chronal_charge import get_power_level, SummedAreaTable, get_best_square
+from .day_11_chronal_charge import get_power_level, SummedAreaTable, get_best_square, get_best_square_and_size
 
 PUZZLE_INPUT = 5719
 
@@ -54,3 +54,17 @@ class TestPartOne:
     def test_answer(self):
         result = get_best_square(PUZZLE_INPUT)
         assert result == {'total_power': 29, 'x': 21, 'y': 34}
+
+
+class TestPartTwo:
+    def test_best_square_and_size(self):
+        assert get_best_square_and_size(18) == {
+            'x': 90, 'y': 269, 'size': 16, 'total_power': 113
+        }
+        assert get_best_square_and_size(42) == {
+            'x': 232, 'y': 251, 'size': 12, 'total_power': 119
+        }
+
+    def test_answer(self):
+        result = get_best_square_and_size(PUZZLE_INPUT)
+        assert result == {'size': 16, 'total_power': 124, 'x': 90, 'y': 244}
