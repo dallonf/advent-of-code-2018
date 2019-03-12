@@ -6,6 +6,9 @@ verify_ssl = true
 [dev-packages]
 pylint = "*"
 pytest-watch = "*"
+autopep8 = "*"
+jupyter = "*"
+rope = "*"
 
 [packages]
 pytest = "*"
