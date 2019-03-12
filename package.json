@@ -8,7 +8,8 @@
     "build": "tsc --build tsconfig.json",
     "py:install": "pipenv install",
     "py:test": "pipenv run pytest pysrc",
-    "py:test:watch": "pipenv run ptw pysrc"
+    "py:test:watch": "pipenv run ptw pysrc",
+    "py:notebook": "pipenv run jupyter notebook"
   },
   "devDependencies": {
     "@types/jest": "^23.3.10",
