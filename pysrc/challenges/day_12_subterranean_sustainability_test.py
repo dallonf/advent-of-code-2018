@@ -16,10 +16,24 @@ class TestPartOne:
         parsed_input = day12.parse_input(day12.test_input)
         result = day12.simulate_generation(
             parsed_input.initial_state, parsed_input.rules)
-        assert day12.stringify_pots(result) == "..#...#....#.....#..#..#..#.."
+        assert day12.stringify_pots(result) == "#...#....#.....#..#..#..#"
 
     def test_get_sum(self):
         assert day12.get_sum(day12.test_input) == 325
 
     def test_answer(self):
         assert day12.get_sum(puzzle_input) == 4200
+
+class TestPartTwo:
+    MAX_GENERATIONS = 50000000000
+    
+    def test_get_sum_stress(self):
+        day12.get_sum(day12.test_input, 5000)
+
+    def test_full_generations(self):
+        day12.get_sum(day12.test_input, self.MAX_GENERATIONS)
+
+    def test_answer(self):
+        result = day12.get_sum(puzzle_input, self.MAX_GENERATIONS) 
+        assert result > 35405 # my first (wrong) guess
+        assert result == 9699999999321
