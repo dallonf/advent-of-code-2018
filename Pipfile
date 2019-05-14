@@ -12,6 +12,7 @@ rope = "*"
 
 [packages]
 pytest = "*"
+notebook = "==5.7.5"
 
 [requires]
 python_version = "3.7"
