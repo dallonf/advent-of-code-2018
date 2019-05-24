@@ -1,5 +1,6 @@
 import pytest
 import pysrc.challenges.day_13_mine_cart_madness as day13
+import pysrc.utils as aoc_utils
 
 SIMPLE_LOOP = [
     "/----\\",
@@ -20,6 +21,7 @@ SIMPLE_INTERSECTION = [
 
 LINEAR_CRASH = ["|", "V", "|", "|", "|", "^", "|"]
 
+LONGER_EXAMPLE = aoc_utils.read_file("day_13_test_input.txt", __file__)
 
 class TestPartOne():
 
@@ -49,3 +51,9 @@ class TestPartOne():
             state = result['state']
 
         assert result['collision'] == (0, 3)
+
+    def test_eventual_collision(self):
+        state = day13.parse_track(LONGER_EXAMPLE)
+        result = day13.simulate_until_collision(state)
+
+        assert result['collision'] == (7, 3)
