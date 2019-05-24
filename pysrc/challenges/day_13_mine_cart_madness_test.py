@@ -22,6 +22,7 @@ SIMPLE_INTERSECTION = [
 LINEAR_CRASH = ["|", "v", "|", "|", "|", "^", "|"]
 
 LONGER_EXAMPLE = aoc_utils.read_file("day_13_test_input.txt", __file__)
+PUZZLE_INPUT = aoc_utils.read_file("day_13_input.txt", __file__)
 
 class TestPartOne():
 
@@ -57,3 +58,9 @@ class TestPartOne():
         result = day13.simulate_until_collision(state)
 
         assert result['collision'] == (7, 3)
+
+    def test_answer(self):
+        state = day13.parse_track(PUZZLE_INPUT)
+        result = day13.simulate_until_collision(state)
+
+        assert result['collision'] == (46, 18)
