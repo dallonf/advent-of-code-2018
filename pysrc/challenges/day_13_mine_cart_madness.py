@@ -9,7 +9,7 @@ class Cart(typing.NamedTuple):
     intersections_visited: int
 
 
-def turn(direction, turn_instruction):
+def turn_intersection(direction, turn_instruction):
     turns = {
         '^': {
             'left': '<',
@@ -34,6 +34,23 @@ def turn(direction, turn_instruction):
     }
     return turns[direction][turn_instruction]
 
+def turn_corner(direction, corner):
+    turns = {
+        '\\': {
+            '^': '<',
+            'v': '>',
+            '<': '^',
+            '>': 'v',
+        },
+        '/': {
+            '^': '>',
+            'v': '<',
+            '<': 'v',
+            '>': '^',
+        }
+    }
+    return turns[corner][direction]
+
 
 def get_turn_instruction(intersections_visited):
     instructions = {
@@ -46,17 +63,18 @@ def get_turn_instruction(intersections_visited):
 
 
 def print_state(state):
-    max_x = max(*(x for x, _ in state['track'].keys()))
-    max_y = max(*(y for _, y in state['track'].keys()))
+    positions = list(state['track'].keys()) + [cart.position for cart in state['carts'].values()]
+    max_x = max((x for x, _ in positions), default=0)
+    max_y = max((y for _, y in positions), default=0)
 
     def character(x, y):
-            "Print the cart if there is one at this location, otherwise print the track piece"
-            cart = next(
-                (cart for cart in state['carts'].values() if cart.position == (x, y)), None)
-            if cart:
-                return cart.direction
-            else:
-                return state['track'].get((x, y), ' ')
+        "Print the cart if there is one at this location, otherwise print the track piece"
+        cart = next(
+            (cart for cart in state['carts'].values() if cart.position == (x, y)), None)
+        if cart:
+            return cart.direction
+        else:
+            return state['track'].get((x, y), ' ')
 
     for y in range(max_y + 1):
         line = (character(x, y) for x in range(max_x + 1))
@@ -114,9 +132,15 @@ def simulate_tick(state):
         new_direction = cart.direction
         new_intersections_visited = cart.intersections_visited
 
+        track_piece = state['track'].get(new_position, '')
+
+        # handle corners
+        if track_piece in ('\\', '/'):
+            new_direction = turn_corner(cart.direction, track_piece)
+
         # handle intersections
-        if state['track'].get(cart.position, '') == '+':
-            new_direction = turn(cart.direction, get_turn_instruction(
+        if track_piece == '+':
+            new_direction = turn_intersection(cart.direction, get_turn_instruction(
                 cart.intersections_visited))
             new_intersections_visited += 1
 

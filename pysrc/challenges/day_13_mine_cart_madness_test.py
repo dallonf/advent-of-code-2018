@@ -19,7 +19,7 @@ SIMPLE_INTERSECTION = [
     "   \\-----/",
 ]
 
-LINEAR_CRASH = ["|", "V", "|", "|", "|", "^", "|"]
+LINEAR_CRASH = ["|", "v", "|", "|", "|", "^", "|"]
 
 LONGER_EXAMPLE = aoc_utils.read_file("day_13_test_input.txt", __file__)
 
