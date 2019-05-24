@@ -164,8 +164,6 @@ def simulate_tick(state):
     new_state['carts'] = next_tick_carts
 
     return {
-        # deprecated, use "first_collision" instead
-        'collision': first_collision,
         'first_collision': first_collision,
         'state': new_state
     }
@@ -176,7 +174,7 @@ def simulate_until_collision(state, max_ticks=1000):
         result = simulate_tick(state)
         state = result['state']
 
-        if result['collision']:
+        if result['first_collision']:
             return result
 
     return result
@@ -187,18 +185,10 @@ def simulate_removing_carts(state, max_ticks=1000):
         result = simulate_tick(state)
         state = result['state']
 
-        if result['collision']:
-            # remove the collided carts and try to keep going
-            collided_carts = [cart for cart in state['carts'].values(
-            ) if cart.position == result['collision']]
-            for cart in collided_carts:
-                del state['carts'][cart.id]
-            result['state'] = state
-
-            if len(state['carts']) == 1:
-                # if there's only one cart left, return the result and its position
-                result['last_cart_position'] = next(
-                    iter(state['carts'].values())).position
-                return result
+        if len(state['carts']) == 1:
+            # if there's only one cart left, return the result and its position
+            result['last_cart_position'] = next(
+                iter(state['carts'].values())).position
+            return result
 
     return result

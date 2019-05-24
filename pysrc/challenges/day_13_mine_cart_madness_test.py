@@ -62,19 +62,19 @@ class TestPartOne():
             result = day13.simulate_tick(state)
             state = result['state']
 
-        assert result['collision'] == (0, 3)
+        assert result['first_collision'] == (0, 3)
 
     def test_eventual_collision(self):
         state = day13.parse_track(LONGER_EXAMPLE)
         result = day13.simulate_until_collision(state)
 
-        assert result['collision'] == (7, 3)
+        assert result['first_collision'] == (7, 3)
 
     def test_answer(self):
         state = day13.parse_track(PUZZLE_INPUT)
         result = day13.simulate_until_collision(state)
 
-        assert result['collision'] == (46, 18)
+        assert result['first_collision'] == (46, 18)
 
 
 class TestPartTwo():
