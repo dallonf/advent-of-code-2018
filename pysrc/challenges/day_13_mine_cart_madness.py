@@ -34,6 +34,7 @@ def turn_intersection(direction, turn_instruction):
     }
     return turns[direction][turn_instruction]
 
+
 def turn_corner(direction, corner):
     turns = {
         '\\': {
@@ -63,7 +64,8 @@ def get_turn_instruction(intersections_visited):
 
 
 def print_state(state):
-    positions = list(state['track'].keys()) + [cart.position for cart in state['carts'].values()]
+    positions = list(state['track'].keys()) + \
+        [cart.position for cart in state['carts'].values()]
     max_x = max((x for x, _ in positions), default=0)
     max_y = max((y for _, y in positions), default=0)
 
@@ -104,7 +106,7 @@ def simulate_tick(state):
     carts_to_simulate = list(state['carts'].values())
     carts_to_simulate.sort(key=lambda x: x.position)
     next_tick_carts = state['carts'].copy()
-    collision = None
+    first_collision = None
 
     for cart in carts_to_simulate:
         x, y = cart.position
@@ -147,17 +149,24 @@ def simulate_tick(state):
         next_tick_carts[cart.id] = cart._replace(
             position=new_position, direction=new_direction, intersections_visited=new_intersections_visited)
 
-        colliding_cart = next((other_cart for other_cart in next_tick_carts.values()
-                               if other_cart.id != cart.id and other_cart.position == new_position), None)
+        colliding_carts = [other_cart for other_cart in next_tick_carts.values()
+                           if other_cart.id != cart.id and other_cart.position == new_position]
 
-        if colliding_cart:
-            collision = colliding_cart.position
+        if len(colliding_carts):
+            first_collision = colliding_carts[0].position
+            # remove colliding carts from the simulation
+            del next_tick_carts[cart.id]
+            for other_cart in colliding_carts:
+                if other_cart.id in next_tick_carts:
+                    del next_tick_carts[other_cart.id]
 
     new_state = state.copy()
     new_state['carts'] = next_tick_carts
 
     return {
-        'collision': collision,
+        # deprecated, use "first_collision" instead
+        'collision': first_collision,
+        'first_collision': first_collision,
         'state': new_state
     }
 
@@ -169,5 +178,27 @@ def simulate_until_collision(state, max_ticks=1000):
 
         if result['collision']:
             return result
+
+    return result
+
+
+def simulate_removing_carts(state, max_ticks=1000):
+    for _ in range(max_ticks):
+        result = simulate_tick(state)
+        state = result['state']
+
+        if result['collision']:
+            # remove the collided carts and try to keep going
+            collided_carts = [cart for cart in state['carts'].values(
+            ) if cart.position == result['collision']]
+            for cart in collided_carts:
+                del state['carts'][cart.id]
+            result['state'] = state
+
+            if len(state['carts']) == 1:
+                # if there's only one cart left, return the result and its position
+                result['last_cart_position'] = next(
+                    iter(state['carts'].values())).position
+                return result
 
     return result
