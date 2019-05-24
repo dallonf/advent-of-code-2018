@@ -83,3 +83,10 @@ class TestPartTwo():
         state = day13.parse_track(PART_TWO_EXAMPLE)
         result = day13.simulate_removing_carts(state)
         assert result['last_cart_position'] == (6, 4)
+
+    def test_answer(self):
+        state = day13.parse_track(PUZZLE_INPUT)
+        result = day13.simulate_removing_carts(state, max_ticks=100000)
+
+        print(len(result['state']['carts']))
+        assert result['last_cart_position'] == None
