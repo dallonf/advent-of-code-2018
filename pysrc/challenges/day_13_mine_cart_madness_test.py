@@ -22,6 +22,17 @@ SIMPLE_INTERSECTION = [
 LINEAR_CRASH = ["|", "v", "|", "|", "|", "^", "|"]
 
 LONGER_EXAMPLE = aoc_utils.read_file("day_13_test_input.txt", __file__)
+
+PART_TWO_EXAMPLE = [
+    "/>-<\\  ",
+    "|   |  ",
+    "| /<+-\\",
+    "| | | v",
+    "\\>+</ |",
+    "  |   ^",
+    "  \\<->/",
+]
+
 PUZZLE_INPUT = aoc_utils.read_file("day_13_input.txt", __file__)
 
 class TestPartOne():
@@ -64,3 +75,11 @@ class TestPartOne():
         result = day13.simulate_until_collision(state)
 
         assert result['collision'] == (46, 18)
+
+
+class TestPartTwo():
+    
+    def test_removing_carts(self):
+        state = day13.parse_track(PART_TWO_EXAMPLE)
+        result = day13.simulate_removing_carts(state)
+        assert result['last_cart_position'] == (6, 4)
