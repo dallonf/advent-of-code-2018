@@ -107,6 +107,7 @@ def simulate_tick(state):
     carts_to_simulate.sort(key=lambda x: x.position)
     next_tick_carts = state['carts'].copy()
     first_collision = None
+    colliding_carts = []
 
     for cart in carts_to_simulate:
         x, y = cart.position
@@ -149,16 +150,19 @@ def simulate_tick(state):
         next_tick_carts[cart.id] = cart._replace(
             position=new_position, direction=new_direction, intersections_visited=new_intersections_visited)
 
-        colliding_carts = [other_cart for other_cart in next_tick_carts.values()
-                           if other_cart.id != cart.id and other_cart.position == new_position]
+        colliding_carts = [collided_cart for collided_cart in next_tick_carts.values()
+                           if collided_cart.id != cart.id and collided_cart.position == new_position]
 
         if len(colliding_carts):
-            first_collision = colliding_carts[0].position
-            # remove colliding carts from the simulation
-            del next_tick_carts[cart.id]
-            for other_cart in colliding_carts:
-                if other_cart.id in next_tick_carts:
-                    del next_tick_carts[other_cart.id]
+            # append this cart as one involved in the collision
+            colliding_carts.append(cart)
+
+    # remove any collided carts, after they've all moved
+    if len(colliding_carts):
+        first_collision = colliding_carts[0].position
+        for collided_cart in colliding_carts:
+            if collided_cart.id in next_tick_carts:
+                del next_tick_carts[collided_cart.id]
 
     new_state = state.copy()
     new_state['carts'] = next_tick_carts
@@ -186,9 +190,9 @@ def simulate_removing_carts(state, max_ticks=1000):
         state = result['state']
 
         if len(state['carts']) == 1:
-            # if there's only one cart left, return the result and its position
-            result['last_cart_position'] = next(
-                iter(state['carts'].values())).position
-            return result
+                # if there's only one cart left, return the result and its position
+                result['last_cart_position'] = next(
+                    iter(state['carts'].values())).position
+                return result
 
     return result
