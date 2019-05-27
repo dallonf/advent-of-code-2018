@@ -29,11 +29,8 @@ summed_area_table_cache = dict()
 
 
 def make_grid(selection_size: int):
-    return [
-        {'x': x, 'y': y}
-        for y in range(1, GRID_SIZE + 1 - (selection_size - 1))
-        for x in range(1, GRID_SIZE + 1 - (selection_size - 1))
-    ]
+    size = (GRID_SIZE - 1) - selection_size
+    return numpy.zeros((size, size))
 
 
 class SummedAreaTable:
@@ -79,22 +76,28 @@ class SummedAreaTable:
 def get_best_square(serial_number: int, selection_size=3):
     table = SummedAreaTable(serial_number)
 
-    def square_with_power(cell):
+    def power(x, y):
         total_power = table.get_sum(
-            cell['x'],
-            cell['y'],
-            cell['x'] + selection_size - 1,
-            cell['y'] + selection_size - 1
+            x,
+            y,
+            x + selection_size - 1,
+            y + selection_size - 1
         )
 
-        return {**cell, 'total_power': total_power}
+        return total_power
 
-    result = max(
-        [square_with_power(cell) for cell in make_grid(selection_size)],
-        key=lambda a: a['total_power']
-    )
+    grid = make_grid(selection_size)
+    flat_grid = grid.flat
+    for i in range(len(flat_grid)):
+        (x, y) = numpy.unravel_index(i, grid.shape)
+        flat_grid[i] = power(x + 1, y + 1)
 
-    return result
+    (maxX, maxY) = numpy.unravel_index(numpy.argmax(grid), grid.shape)
+    return {
+        'x': maxX + 1,
+        'y': maxY + 1,
+        'total_power': grid[maxX, maxY]
+    }
 
 
 def get_best_square_and_size(serial_number: int):

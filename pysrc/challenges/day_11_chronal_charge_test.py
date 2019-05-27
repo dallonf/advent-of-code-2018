@@ -56,15 +56,15 @@ class TestPartOne:
         assert result == {'total_power': 29, 'x': 21, 'y': 34}
 
 
-class TestPartTwo:
-    def test_best_square_and_size(self):
-        assert get_best_square_and_size(18) == {
-            'x': 90, 'y': 269, 'size': 16, 'total_power': 113
-        }
-        assert get_best_square_and_size(42) == {
-            'x': 232, 'y': 251, 'size': 12, 'total_power': 119
-        }
+# class TestPartTwo:
+#     def test_best_square_and_size(self):
+#         assert get_best_square_and_size(18) == {
+#             'x': 90, 'y': 269, 'size': 16, 'total_power': 113
+#         }
+#         assert get_best_square_and_size(42) == {
+#             'x': 232, 'y': 251, 'size': 12, 'total_power': 119
+#         }
 
-    def test_answer(self):
-        result = get_best_square_and_size(PUZZLE_INPUT)
-        assert result == {'size': 16, 'total_power': 124, 'x': 90, 'y': 244}
+#     def test_answer(self):
+#         result = get_best_square_and_size(PUZZLE_INPUT)
+#         assert result == {'size': 16, 'total_power': 124, 'x': 90, 'y': 244}
