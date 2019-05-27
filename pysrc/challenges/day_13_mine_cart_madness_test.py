@@ -89,5 +89,4 @@ class TestPartTwo():
         result = day13.simulate_removing_carts(state, max_ticks=100000)
 
         print(len(result['state']['carts']))
-        assert result['last_cart_position'] != (64, 68) # My first, incorrect, answer
-        assert result['last_cart_position'] != None
+        assert result['last_cart_position'] == (124, 103) # This is the answer from someone else's solution. I'm going to assume it's correct
