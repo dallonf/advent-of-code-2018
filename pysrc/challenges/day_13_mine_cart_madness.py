@@ -107,8 +107,13 @@ def simulate_tick(state):
     carts_to_simulate.sort(key=lambda x: x.position)
     next_tick_carts = state['carts'].copy()
     first_collision = None
+    collided_carts = set()
 
     for cart in carts_to_simulate:
+        if cart.id in collided_carts:
+            # this cart was already involved in a collision on this tick. It has been removed
+            continue
+
         x, y = cart.position
 
         def up():
@@ -153,12 +158,13 @@ def simulate_tick(state):
                            if other_cart.id != cart.id and other_cart.position == new_position]
 
         if len(colliding_carts):
+            collided_carts.add(cart.id)
+            collided_carts.update((x.id for x in colliding_carts))
             first_collision = colliding_carts[0].position
-            # remove colliding carts from the simulation
-            del next_tick_carts[cart.id]
-            for other_cart in colliding_carts:
-                if other_cart.id in next_tick_carts:
-                    del next_tick_carts[other_cart.id]
+
+    for collided_cart_id in collided_carts:
+        if collided_cart_id in next_tick_carts:
+            del next_tick_carts[collided_cart_id]
 
     new_state = state.copy()
     new_state['carts'] = next_tick_carts

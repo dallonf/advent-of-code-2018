@@ -35,6 +35,7 @@ PART_TWO_EXAMPLE = [
 
 PUZZLE_INPUT = aoc_utils.read_file("day_13_input.txt", __file__)
 
+
 class TestPartOne():
 
     def test_parse_simple_loop(self):
@@ -78,7 +79,7 @@ class TestPartOne():
 
 
 class TestPartTwo():
-    
+
     def test_removing_carts(self):
         state = day13.parse_track(PART_TWO_EXAMPLE)
         result = day13.simulate_removing_carts(state)
@@ -87,6 +88,4 @@ class TestPartTwo():
     def test_answer(self):
         state = day13.parse_track(PUZZLE_INPUT)
         result = day13.simulate_removing_carts(state, max_ticks=100000)
-
-        print(len(result['state']['carts']))
-        assert result['last_cart_position'] == (124, 103) # This is the answer from someone else's solution. I'm going to assume it's correct
+        assert result['last_cart_position'] == (124, 103)
