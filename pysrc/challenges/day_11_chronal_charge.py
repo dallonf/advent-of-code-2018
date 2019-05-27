@@ -47,22 +47,20 @@ class SummedAreaTable:
             self.table = [
                 [None for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
 
-            def populate_table(x: int, y: int) -> int:
-                if x <= 0 or y <= 0:
-                    return 0
-                result = self.table[x - 1] and self.table[x - 1][y - 1]
-                if result != None:
-                    return result
-                else:
-                    # compute result lazily
-                    computed = get_power_level(x, y, serial_number) \
-                        + populate_table(x, y - 1) \
-                        + populate_table(x - 1, y) \
-                        - populate_table(x - 1, y - 1)
-                    self.table[x - 1][y - 1] = computed
-                    return computed
+            def compute_cell(x: int, y: int) -> int:
+                return get_power_level(x, y, serial_number) \
+                    + self.read_from_table(x, y - 1) \
+                    + self.read_from_table(x - 1, y) \
+                    - self.read_from_table(x - 1, y - 1)
 
-            populate_table(GRID_SIZE, GRID_SIZE)
+            for ring in range(GRID_SIZE):
+                for edge in range(ring):
+                    # compute the edges from top to bottom and left to right
+                    self.table[edge][ring] = compute_cell(edge + 1, ring + 1)
+                    self.table[ring][edge] = compute_cell(ring + 1, edge + 1)
+                # finally compute the corner of the ring
+                self.table[ring][ring] = compute_cell(ring + 1, ring + 1)
+
             summed_area_table_cache[serial_number] = self.table
 
     def read_from_table(self, x: int, y: int) -> int:
