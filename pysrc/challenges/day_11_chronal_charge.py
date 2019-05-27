@@ -1,4 +1,5 @@
 import math
+import numpy
 from typing import List
 
 GRID_SIZE = 300
@@ -38,14 +39,13 @@ def make_grid(selection_size: int):
 class SummedAreaTable:
     """https://en.wikipedia.org/wiki/Summed-area_table"""
 
-    table: List[List[int]]
+    table: numpy.ndarray
 
     def __init__(self, serial_number: int):
         if (serial_number in summed_area_table_cache):
             self.table = summed_area_table_cache[serial_number]
         else:
-            self.table = [
-                [None for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
+            self.table = numpy.zeros((GRID_SIZE, GRID_SIZE))
 
             def compute_cell(x: int, y: int) -> int:
                 return get_power_level(x, y, serial_number) \
@@ -56,17 +56,17 @@ class SummedAreaTable:
             for ring in range(GRID_SIZE):
                 for edge in range(ring):
                     # compute the edges from top to bottom and left to right
-                    self.table[edge][ring] = compute_cell(edge + 1, ring + 1)
-                    self.table[ring][edge] = compute_cell(ring + 1, edge + 1)
+                    self.table[edge, ring] = compute_cell(edge + 1, ring + 1)
+                    self.table[ring, edge] = compute_cell(ring + 1, edge + 1)
                 # finally compute the corner of the ring
-                self.table[ring][ring] = compute_cell(ring + 1, ring + 1)
+                self.table[ring, ring] = compute_cell(ring + 1, ring + 1)
 
             summed_area_table_cache[serial_number] = self.table
 
     def read_from_table(self, x: int, y: int) -> int:
         if x <= 0 or y <= 0:
             return 0
-        return self.table[x - 1][y - 1]
+        return self.table[x - 1, y - 1]
 
     def get_sum(self, x1: int, y1: int, x2: int, y2: int) -> int:
         return \

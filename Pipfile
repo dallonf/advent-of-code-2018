@@ -13,6 +13,7 @@ rope = "*"
 [packages]
 pytest = "*"
 notebook = "==5.7.5"
+numpy = "*"
 
 [requires]
 python_version = "3.7"
