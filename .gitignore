@@ -2,3 +2,6 @@ node_modules
 compiled
 .vscode
 .pytest_cache
+
+day_*_input.txt
+day-*-data.txt
